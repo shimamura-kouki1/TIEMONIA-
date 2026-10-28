@@ -1,5 +1,7 @@
 using System;
 
+//戦闘中にLevelUpした時にステータスをアップデートしたほうがよろし
+
 /// <summary>
 /// 戦闘に参加しているモンスターの状態を管理するクラス
 /// </summary>
@@ -8,14 +10,14 @@ public sealed class BattleMonster
     public Monster Owner { get; }
     public BattleSide Side { get; }
 
-    public string Name => Owner.Data.Name;
-    public int MaxHp => Owner.Data.MaxHp;
+    public string Name => Owner.Name;
+    public int MaxHp => Owner.MaxHp;
     public int CurrentHp { get; private set; }
 
 
-    public int Attack => Owner.Data.Attack;
-    public int Defense => Owner.Data.Defense;
-    public int EffectiveSpeed => Owner.Data.Speed; // 能力変化を入れるまでは基礎速度
+    public int Attack => Owner.Attack;
+    public int Defense => Owner.Defense;
+    public int EffectiveSpeed => Owner.Speed; // 能力変化を入れるまでは基礎速度
 
     // 戦闘後に残る状態を個体から引き継ぐ。
     public MajorStatus MajorStatus { get; private set; }
@@ -53,6 +55,14 @@ public sealed class BattleMonster
         CurrentHp = Math.Min(MaxHp, CurrentHp + amount);
     }
 
+    /// <summary>HPを指定した分回復させ蘇生させる</summary>
+    public void Revive(int hp)
+    {
+        if (hp <= 0 || !IsFainted) return;
+
+        CurrentHp = Math.Min(MaxHp, hp);
+    }
+
     public bool HasMajorStatus(MajorStatus status)
     {
         return (MajorStatus & status) != 0;
@@ -82,11 +92,19 @@ public sealed class BattleMonster
     public void ClearStatuses()
     {
         MajorStatus = MajorStatus.None;
+        BattleStatus = BattleStatus.None;
     }
 
+    /// <summary>戦闘中の状態をすべて解除する</summary>
     public void ClearBattleStatus()
     {
         BattleStatus = BattleStatus.None;
+    }
+
+    /// <summary>持続する状態異常を解除する</summary>
+    public void ClearMajorStatus()
+    {
+        MajorStatus = MajorStatus.None;
     }
 
     public void AddBattleStatus(BattleStatus status)
