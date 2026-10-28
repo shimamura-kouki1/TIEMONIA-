@@ -2,17 +2,17 @@ using System;
 
 /// <summary>
 /// 戦闘中に付与される状態異常。
-/// 複数の状態を同時に保持できるビットマスク。
+/// 同時に１種類だけ持つ
 /// </summary>
 [System.Flags]
 public enum MajorStatus
 {
-    None = 0,
-    Poison = 1 << 0,
-    Sleep = 1 << 1,
-    Paralysis = 1 << 2,
-    Burn = 1 << 3,
-    Freeze = 1 << 4,
+    None,
+    Poison,
+    Burn,
+    Paralysis,
+    Sleep,
+    Freeze
 }
 
 [System.Flags]
