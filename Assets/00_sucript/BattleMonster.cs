@@ -11,13 +11,17 @@ public sealed class BattleMonster
     public BattleSide Side { get; }
 
     public string Name => Owner.Name;
-    public int MaxHp => Owner.MaxHp;
     public int CurrentHp { get; private set; }
 
+    private int _maxHp;
+    private int _attack;
+    private int _defense;
+    private int _speed;
 
-    public int Attack => Owner.Attack;
-    public int Defense => Owner.Defense;
-    public int EffectiveSpeed => Owner.Speed; // 能力変化を入れるまでは基礎速度
+    public int MaxHp => _maxHp;
+    public int Attack => _attack;
+    public int Defense => _defense;
+    public int EffectiveSpeed => _speed;
 
     // 戦闘後に残る状態を個体から引き継ぐ。
     public MajorStatus MajorStatus { get; private set; }
@@ -35,9 +39,43 @@ public sealed class BattleMonster
     {
         Owner = owner ?? throw new ArgumentNullException(nameof(owner));
         Side = side;
+
+        _maxHp = owner.MaxHp;
+        _attack = owner.Attack;
+        _defense = owner.Defense;
+        _speed = owner.Speed;
+
         CurrentHp = owner.CurrentHp;
         MajorStatus = owner.Status;
         BattleStatus = BattleStatus.None;
+    }
+
+    /// <summary>
+    /// レベルアップしたときのステータス更新
+    /// レベルアップ処理に呼ぶ
+    /// </summary>
+    public void RefreshStats()
+    {
+        int oldMaxHp = _maxHp;
+
+        //個体の最新ステータスを戦闘中のデータに反映する
+        _maxHp = Owner.MaxHp;
+        _attack = Owner.Attack;
+        _defense = Owner.Defense;
+        _speed = Owner.Speed;
+
+        //最大HPの増加分だけ現在HPも増やす
+        int hpIncrease = _maxHp - oldMaxHp;
+
+        if(hpIncrease > 0 && !IsFainted)
+        {
+            CurrentHp = Math.Min(_maxHp, CurrentHp + hpIncrease);
+        }
+        else
+        {
+            //もし最大HPが減った場合、現在HPが上限を超えないようにする
+            CurrentHp = Math.Min(CurrentHp, _maxHp);
+        }
     }
 
     /// <summary>HPを指定した分減らす</summary>
