@@ -13,6 +13,7 @@ public sealed class BattleMonster
     public string Name => Owner.Name;
     public int CurrentHp { get; private set; }
 
+
     private int _maxHp;
     private int _attack;
     private int _defense;
@@ -28,6 +29,8 @@ public sealed class BattleMonster
 
     // 混乱など、戦闘後に破棄する状態。
     public BattleStatus BattleStatus { get; private set; }
+    public int MajorStatusTurns { get; private set; }
+
 
     public bool IsFainted => CurrentHp <= 0;
 
@@ -101,22 +104,10 @@ public sealed class BattleMonster
         CurrentHp = Math.Min(MaxHp, hp);
     }
 
+    /// <summary>指定した状態異常か確認する</summary>
     public bool HasMajorStatus(MajorStatus status)
     {
-        return (MajorStatus & status) != 0;
-    }
-
-    /// <summary>状態異常を追加する</summary>
-    public void AddMajorStatus(MajorStatus status)
-    {
-        MajorStatus |= status;
-    }
-
-
-    /// <summary>指定した状態異常を取り除く</summary>
-    public void RemoveMajorStatus(MajorStatus status)
-    {
-        MajorStatus &= ~status;
+        return MajorStatus == status;
     }
 
     /// <summary>指定した状態異常があるかを調べる</summary>
@@ -129,8 +120,8 @@ public sealed class BattleMonster
     /// <summary>すべての状態異常を取り除く</summary>
     public void ClearStatuses()
     {
-        MajorStatus = MajorStatus.None;
-        BattleStatus = BattleStatus.None;
+        ClearMajorStatus();
+        ClearBattleStatus();
     }
 
     /// <summary>戦闘中の状態をすべて解除する</summary>
@@ -139,10 +130,16 @@ public sealed class BattleMonster
         BattleStatus = BattleStatus.None;
     }
 
+    public void SetMajorStatus(MajorStatus status,int turns)
+    {
+        MajorStatus = status;
+        MajorStatusTurns = status == MajorStatus.None ? 0 : Math.Max(0,turns);
+    }
     /// <summary>持続する状態異常を解除する</summary>
     public void ClearMajorStatus()
     {
         MajorStatus = MajorStatus.None;
+        MajorStatusTurns = 0;
     }
 
     public void AddBattleStatus(BattleStatus status)
