@@ -5,7 +5,7 @@
 public static class ActionPriority
 {
     public const int Item = 200;
-    public const int PlayerSkill = 200;
+    public const int Skill = 200;
     public const int Attack = 100;
 
 }

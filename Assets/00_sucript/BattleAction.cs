@@ -1,16 +1,33 @@
+using System;
+
 /// <summary>
 /// 選択した行動１回分のデータ
 /// </summary>
 public sealed class BattleAction
 {
     /// <summary>行動するモンスター</summary>
-    public BattleMonster User;
+    public BattleMonster User { get; }
+
     /// <summary>行動の種類</summary>
-    public ActionType Type;
-    /// <summary>使用する技（技を使う場合）</summary>
-    public SkillData Skill;
+    public ActionType Type { get; }
+
+    /// <summary>使用する技</summary>
+    public SkillData Skill { get; }
+
     /// <summary>行動の対象</summary>
-    public BattleMonster[] Targets;
+    public BattleMonster[] Targets { get; }
+
+    public BattleAction(
+       BattleMonster user,
+       ActionType type,
+       SkillData skill,
+       BattleMonster[] targets)
+    {
+        User = user ?? throw new ArgumentNullException(nameof(user));
+        Type = type;
+        Skill = skill;
+        Targets = targets ?? Array.Empty<BattleMonster>();
+    }
 }
 
 /// <summary>
