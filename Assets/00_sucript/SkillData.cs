@@ -1,7 +1,5 @@
 using System;
-using UnityEngine;
-[CreateAssetMenu(menuName = "TIEMONIA/SkillData Data")]
-public class SkillData : ScriptableObject
+public class SkillData
 {
     // 技を識別する固定ID
     public int SkillId { get; }
