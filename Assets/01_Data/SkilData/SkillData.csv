@@ -1,0 +1,6 @@
+
+SkillId,Name,Power,Accuracy,Priority,Element,TargetType
+1,たいあたり,40,100,0,Normal,SingleEnemy
+2,ほのおのいぶき,60,95,0,Fire,SingleEnemy
+3,でんこうせっか,40,100,1,Normal,SingleEnemy
+4,いやしのひかり,0,100,0,None,SingleAlly
