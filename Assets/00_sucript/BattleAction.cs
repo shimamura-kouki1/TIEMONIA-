@@ -1,7 +1,7 @@
 using System;
 
 /// <summary>
-/// 選択した行動１回分のデータ
+/// バトル中の実行する行動情報を保持するクラス
 /// </summary>
 public sealed class BattleAction
 {
@@ -17,6 +17,14 @@ public sealed class BattleAction
     /// <summary>行動の対象</summary>
     public BattleMonster[] Targets { get; }
 
+    /// <summary>
+    /// バトルアクションの生成
+    /// </summary>
+    /// <param name="user">行動するモンスター</param>
+    /// <param name="type">行動の種類</param>
+    /// <param name="skill">使用する技データ</param>
+    /// <param name="targets">行動の対象</param>
+    /// <exception cref="ArgumentNullException"></exception>
     public BattleAction(
        BattleMonster user,
        ActionType type,
