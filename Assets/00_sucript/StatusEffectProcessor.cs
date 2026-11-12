@@ -20,7 +20,7 @@ public sealed class StatusEffectProcessor
     {
         if (monster == null || monster.IsFainted) return;
 
-        switch (monster.MajorStatus)
+        switch (monster.CurrentMajorStatus)
         {
             case MajorStatus.Poison:
                 Poison(monster);

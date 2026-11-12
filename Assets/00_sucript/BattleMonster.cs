@@ -24,11 +24,11 @@ public sealed class BattleMonster
     public int Defense => _defense;
     public int EffectiveSpeed => _speed;
 
-    // 戦闘後に残る状態を個体から引き継ぐ。
-    public MajorStatus MajorStatus { get; private set; }
+    /// <summary>戦闘後も引き継ぐ状態異常</summary>
+    public MajorStatus CurrentMajorStatus { get; private set; }
 
-    // 混乱など、戦闘後に破棄する状態。
-    public BattleStatus BattleStatus { get; private set; }
+    /// <summary>戦闘中だけ有効な状態</summary>
+    public BattleStatus CurrentBattleStatus { get; private set; }
     public int MajorStatusTurns { get; private set; }
 
 
@@ -48,9 +48,9 @@ public sealed class BattleMonster
         _defense = owner.Defense;
         _speed = owner.Speed;
 
-        CurrentHp = owner.CurrentHp;
-        MajorStatus = owner.Status;
-        BattleStatus = BattleStatus.None;
+        CurrentHp = Math.Clamp(owner.CurrentHp, 0, MaxHp);
+        CurrentMajorStatus = owner.Status;
+        CurrentBattleStatus = BattleStatus.None;
     }
 
     /// <summary>
@@ -107,14 +107,14 @@ public sealed class BattleMonster
     /// <summary>指定した状態異常か確認する</summary>
     public bool HasMajorStatus(MajorStatus status)
     {
-        return MajorStatus == status;
+        return CurrentMajorStatus == status;
     }
 
     /// <summary>指定した状態異常があるかを調べる</summary>
 
     public bool HasBattleStatus(BattleStatus status)
     {
-        return (BattleStatus & status) != 0;
+        return (CurrentBattleStatus & status) != 0;
     }
 
     /// <summary>すべての状態異常を取り除く</summary>
@@ -127,36 +127,36 @@ public sealed class BattleMonster
     /// <summary>戦闘中の状態をすべて解除する</summary>
     public void ClearBattleStatus()
     {
-        BattleStatus = BattleStatus.None;
+        CurrentBattleStatus = BattleStatus.None;
     }
 
     public void SetMajorStatus(MajorStatus status,int turns)
     {
-        MajorStatus = status;
+        CurrentMajorStatus = status;
         MajorStatusTurns = status == MajorStatus.None ? 0 : Math.Max(0,turns);
     }
     /// <summary>持続する状態異常を解除する</summary>
     public void ClearMajorStatus()
     {
-        MajorStatus = MajorStatus.None;
+        CurrentMajorStatus = MajorStatus.None;
         MajorStatusTurns = 0;
     }
 
     public void AddBattleStatus(BattleStatus status)
     {
-        BattleStatus |= status;
+        CurrentBattleStatus |= status;
     }
 
     public void RemoveBattleStatus(BattleStatus status)
     {
-        BattleStatus &= ~status;
+        CurrentBattleStatus &= ~status;
     }
 
     /// <summary>戦闘終了時に、引き継ぐデータだけ仲間個体へ反映する。</summary>
     public void ApplyBattleResult()
     {
         Owner.SetHp(CurrentHp);
-        Owner.SetStatus(MajorStatus);
+        Owner.SetStatus(CurrentMajorStatus);
         // BattleStatus は Owner に反映しないため、戦闘後は消える。
     }
 
